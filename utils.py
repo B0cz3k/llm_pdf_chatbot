@@ -32,7 +32,7 @@ class FaissDB:
         return ''.join(doc.page_content + '\n' for doc in retrieved)
 
 
-def loader_splitter(file_paths: list, chunk_size: int=256):
+def loader_splitter(file_paths: list, chunk_size: int=256, model='sentence-transformers/all-MiniLM-L12-v2'):
     loaders = [PyPDFLoader(file_path) for file_path in file_paths]
 
     pages = []
@@ -40,12 +40,10 @@ def loader_splitter(file_paths: list, chunk_size: int=256):
         pages.extend(loader.load())
 
     text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
-        tokenizer=AutoTokenizer.from_pretrained(
-            'sentence-transformers/all-MiniLM-L12-v2'
-        ),
+        tokenizer=AutoTokenizer.from_pretrained(model),
         chunk_size=chunk_size,
         chunk_overlap=chunk_size // 10,
         strip_whitespace=True,
     )
 
-    return text_splitter.split_documents(pages)
+    return text_splitter.split_documents(pages) 
